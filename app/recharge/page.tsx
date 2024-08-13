@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import RechargeOptions from '@/components/RechargeOptions';
 import RechargeQR from '@/components/RechargeQR';
 import RechargeForm from '@/components/RechargeForm';
-
+import { MoveLeft } from 'lucide-react';
 export default function RechargePage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [qrData, setQrData] = useState<{ payment_link: string; qr_code: string } | null>(null);
@@ -29,7 +29,7 @@ export default function RechargePage() {
     <div className="bg-gray-900 min-h-screen text-white p-4">
       <div className="flex items-center mb-4">
         <button onClick={handleBack} className="mr-4">
-          &lt; Back
+        <MoveLeft/>
         </button>
         <h1 className="text-xl font-bold">Recharge</h1>
       </div>

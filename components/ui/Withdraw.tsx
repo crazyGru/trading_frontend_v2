@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 
 export default function Component() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+    <div className="flex h-full flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
       <div className="w-full max-w-lg p-6 bg-gray-800 rounded-lg shadow-lg">
         <header className="flex items-center justify-between pb-4 mb-4 border-b border-gray-700">
           <ArrowLeftIcon className="w-6 h-6 text-white" />

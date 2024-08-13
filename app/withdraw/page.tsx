@@ -61,8 +61,7 @@ const Withdraw = () => {
   };
 
   return (
-    <div className="withdraw-page">
-      <h1 className="text-2xl font-bold mb-4">Withdraw</h1>
+    <div className="withdraw-page bg-gray-900 min-h-screen text-white p-4">
       <BalanceInfo balance={balance} pending={pending} />
       <PaymentMethod paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
       <WithdrawForm onWithdraw={handleWithdraw} paymentMethod={paymentMethod} />

@@ -21,9 +21,9 @@ const BottomNavigation = () => {
           <UserPlus size={20} />
           <span className="text-xs">Invite</span>
         </Link>
-        <Link href="/profile" className="flex flex-col items-center">
+        <Link href="/withdraw" className="flex flex-col items-center">
           <User size={20} />
-          <span className="text-xs">Profile</span>
+          <span className="text-xs">Withdraw</span>
         </Link>
       </div>
     </nav>

@@ -17,6 +17,9 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onWithdraw, paymentMethod }
 
   return (
     <form onSubmit={handleSubmit} className="withdraw-form w-full bg-gray-800 p-4 rounded-lg space-y-4">
+      <div className="text-sm text-gray-400 mb-4">
+        Withdrawal limit range {paymentMethod === 'TRC20-USDT' ? '3.00' : '20.00'} - 9999999.00
+      </div>
       <div>
         <label className="block text-gray-400 mb-1">Withdrawal Address</label>
         <input
