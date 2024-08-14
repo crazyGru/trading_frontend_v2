@@ -1,19 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 type RechargeFormProps = {
-  option: string;
+  walletAddress: string;
+  onCheck: () => Promise<void>;
 };
 
-export default function RechargeForm({ option }: RechargeFormProps) {
-  const [rechargeData, setRechargeData] = useState<{
-    payment_link: string;
-    qr_code: string;
-  } | null>(null);
-
-  useEffect(() => {
-    generatePaymentLink();
-  }, []);
+export default function RechargeForm({ walletAddress, onCheck }: RechargeFormProps) {
+  const [qrData, setQrData] = useState<{ payment_link: string; qr_code: string } | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
 
   const generatePaymentLink = async () => {
     try {
@@ -22,7 +18,7 @@ export default function RechargeForm({ option }: RechargeFormProps) {
       });
       if (response.ok) {
         const data = await response.json();
-        setRechargeData(data);
+        setQrData(data);
       } else {
         console.error('Failed to generate payment link');
       }
@@ -31,36 +27,39 @@ export default function RechargeForm({ option }: RechargeFormProps) {
     }
   };
 
-  const handleCopy = () => {
-    if (rechargeData) {
-      navigator.clipboard.writeText(rechargeData.payment_link);
-    }
+  const handleCheck = async () => {
+    setIsChecking(true);
+    await onCheck();
+    setIsChecking(false);
   };
-
-  if (!rechargeData) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="space-y-4 bg-gray-800 p-4 rounded-lg">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">AAQ Quantify</h2>
+        <h2 className="text-lg font-semibold">Recharge Address</h2>
         <span className="text-teal-400">TRC20-USDT</span>
       </div>
-      <div className="flex justify-center">
-      <img 
-  src={`data:image/png;base64,${rechargeData.qr_code}`} 
-  alt="QR Code" 
-  className="w-40 h-40" 
-/>
-
-      </div>
-      <p className="text-center text-sm">Recharge Address</p>
-      <div className="bg-yellow-400 text-black p-2 rounded-md flex justify-between items-center">
-        <span className="truncate">{rechargeData.payment_link}</span>
-        <button onClick={handleCopy} className="text-xs">Copy</button>
-      </div>
-      <Button className="w-full bg-yellow-400 text-black">Recharge Complete</Button>
+      {qrData ? (
+        <>
+          <div className="flex justify-center">
+            <Image src={`data:image/png;base64,${qrData.qr_code}`} alt="QR Code" width={200} height={200} />
+          </div>
+          <div className="bg-yellow-400 text-black p-2 rounded-md flex justify-between items-center">
+            <span className="truncate">{qrData.payment_link}</span>
+            <button onClick={() => navigator.clipboard.writeText(qrData.payment_link)} className="text-xs">Copy</button>
+          </div>
+        </>
+      ) : (
+        <Button onClick={generatePaymentLink} className="w-full">Generate QR Code</Button>
+      )}
+     
+      <Button 
+        onClick={handleCheck} 
+        className="w-full bg-yellow-400 text-black" 
+        disabled={isChecking}
+      >
+        {isChecking ? 'Checking...' : 'Check Recharge'}
+      </Button>
     </div>
   );
 }
