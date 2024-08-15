@@ -1,32 +1,48 @@
+'use client';
 import Link from "next/link";
-import { Home, TrendingUp, Wallet, UserPlus, User } from "lucide-react";
+import { Home, TrendingUp, CreditCard, UserPlus, DollarSign } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dock, DockIcon } from "@/components/magicui/dock";
 
-const BottomNavigation = () => {
+const Icons = {
+  home: Home,
+  trade: TrendingUp,
+  recharge: CreditCard,  // Updated icon for "Recharge"
+  invite: UserPlus,
+  withdraw: DollarSign,  // Updated icon for "Withdraw"
+};
+
+const NAV_ITEMS = [
+  { href: "/", icon: Icons.home, label: "Home" },
+  { href: "/#", icon: Icons.trade, label: "Trade" },
+  { href: "/recharge", icon: Icons.recharge, label: "Recharge" },
+  { href: "/#", icon: Icons.invite, label: "Invite" },
+  { href: "/withdraw", icon: Icons.withdraw, label: "Withdraw" },
+];
+
+const BottomNavigation: React.FC = () => {
   return (
-    <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-200">
-      <div className="flex justify-around py-2">
-        <Link href="/" className="flex flex-col items-center">
-          <Home size={20} />
-          <span className="text-xs">Home</span>
-        </Link>
-        <Link href="/trade" className="flex flex-col items-center">
-          <TrendingUp size={20} />
-          <span className="text-xs">Trade</span>
-        </Link>
-        <Link href="/recharge" className="flex flex-col items-center">
-          <Wallet size={20} />
-          <span className="text-xs">Recharge</span>
-        </Link>
-        <Link href="/invite" className="flex flex-col items-center">
-          <UserPlus size={20} />
-          <span className="text-xs">Invite</span>
-        </Link>
-        <Link href="/withdraw" className="flex flex-col items-center">
-          <User size={20} />
-          <span className="text-xs">Withdraw</span>
-        </Link>
-      </div>
-    </nav>
+    <TooltipProvider>
+      <Dock
+        direction="middle"
+        className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-xl bg-gray-950 border-t border-gray-200 py-2 flex justify-around"
+      >
+        {NAV_ITEMS.map((item) => (
+          <DockIcon key={item.label} className="flex-1 flex justify-center">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href={item.href} className="flex flex-col items-center">
+                  <item.icon className="text-slate-300" size={24} />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{item.label}</p>
+              </TooltipContent>
+            </Tooltip>
+          </DockIcon>
+        ))}
+      </Dock>
+    </TooltipProvider>
   );
 };
 

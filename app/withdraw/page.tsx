@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import BalanceInfo from '@/components/BalanceInfo';
 import WithdrawForm from '@/components/WithdrawForm';
-import PaymentMethod from '@/components/PaymentMethod';
 import ConfirmButton from '@/components/ConfirmButton';
 import { toast } from '@/components/ui/use-toast';
+import { motion } from 'framer-motion';
 
 const Withdraw = () => {
   const [balance, setBalance] = useState(0);
@@ -94,15 +94,39 @@ const Withdraw = () => {
     }
   };
 
+  
   return (
-    <div className="withdraw-page bg-gray-900 min-h-screen text-white p-4">
-      <BalanceInfo 
-        balance={balance} 
-        onBalanceUpdate={setBalance}
-      />
-      <WithdrawForm onWithdraw={setWithdrawData} />
-      <ConfirmButton onClick={handleWithdraw} />
-    </div>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="withdraw-page bg-gray-900 min-h-screen text-white p-4"
+    >
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        <BalanceInfo 
+          balance={balance} 
+          onBalanceUpdate={setBalance}
+        />
+      </motion.div>
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
+        <WithdrawForm onWithdraw={setWithdrawData} />
+      </motion.div>
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+      >
+        <ConfirmButton onClick={handleWithdraw} />
+      </motion.div>
+    </motion.div>
   );
 };
 

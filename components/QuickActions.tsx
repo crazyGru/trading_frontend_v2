@@ -1,26 +1,23 @@
-// components/QuickActions.tsx
-import { Button } from "@/components/ui/button";
 import { Wallet, TrendingUp, ArrowLeftRight, Gift } from "lucide-react";
+import ShinyButton from "@/components/magicui/shiny-button";
 
 const actions = [
-  { name: "Deposit", icon: <Wallet size={24} /> },
-  { name: "Trade", icon: <TrendingUp size={24} /> },
-  { name: "Transfer", icon: <ArrowLeftRight size={24} /> },
-  { name: "Earn", icon: <Gift size={24} /> },
+  { name: "Recharge", icon: <Wallet size={24} /> },
+  { name: "Withdraw", icon: <ArrowLeftRight size={24} /> },
+  { name: "Help", icon: <Gift size={24} /> },
+  { name: "Invite Friends", icon: <TrendingUp size={24} /> },
 ];
 
 export default function QuickActions() {
   return (
-    <div className="grid grid-cols-4 gap-4 text-black my-6">
+    <div className="grid grid-cols-4 gap-4 my-6">
       {actions.map((action) => (
-        <Button
-          key={action.name}
-          variant="outline"
-          className="flex flex-col items-center py-4"
-        >
-          {action.icon}
-          <span className="mt-2 text-sm">{action.name}</span>
-        </Button>
+        <div key={action.name} className="flex flex-col items-center justify-center space-y-2">
+          <div className="flex items-center justify-center p-4 bg-gray-800 text-white rounded-lg shadow-md">
+            {action.icon}
+          </div>
+          <ShinyButton text={action.name} className="mt-2 text-sm text-slate-200 font-semibold" />
+        </div>
       ))}
     </div>
   );

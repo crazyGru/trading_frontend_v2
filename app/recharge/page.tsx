@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import BalanceInfo from '@/components/BalanceInfo';
 import RechargeForm from '@/components/RechargeForm';
 import { toast } from '@/components/ui/use-toast';
+import { motion } from 'framer-motion';
 
 export default function RechargePage() {
   const [balance, setBalance] = useState(0);
@@ -81,13 +82,37 @@ export default function RechargePage() {
   };
 
   return (
-    <div className="bg-gray-900 min-h-screen text-white p-4">
-      <h1 className="text-xl font-bold mb-4">Recharge</h1>
-      <BalanceInfo 
-        balance={balance} 
-        onBalanceUpdate={setBalance}
-      />
-      <RechargeForm walletAddress={walletAddress} onCheck={handleCheck} />
-    </div>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="bg-gray-900 min-h-screen text-white p-4"
+    >
+      <motion.h1 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="text-xl font-bold mb-4"
+      >
+        Recharge
+      </motion.h1>
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
+        <BalanceInfo 
+          balance={balance} 
+          onBalanceUpdate={setBalance}
+        />
+      </motion.div>
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+      >
+        <RechargeForm walletAddress={walletAddress} onCheck={handleCheck} />
+      </motion.div>
+    </motion.div>
   );
 }

@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="bg-gradient-to-r from-gray-600 via-gray-800 to-gray-900 min-h-screen flex justify-center">
-          <main className="bg-white w-full max-w-md min-h-screen relative">
+          <main className="bg-white w-full max-w-xl min-h-screen relative">
             {children}
             <Navigation />
           </main>

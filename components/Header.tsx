@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-
+import SparklesText from "@/components/magicui/sparkles-text";
+ 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function Header() {
 
   return (
     <header className="bg-gray-800 p-4 flex justify-between items-center">
-      <div className="text-xl font-bold text-white">CryptoTrade</div>
+      <SparklesText text="CryptoTrade" className='text-xl' />
       <div>
         {isLoggedIn ? (
           <Button variant="ghost" onClick={handleLogout}>

@@ -1,43 +1,78 @@
-import Image from 'next/image';
-import { Card, CardContent } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+'use client';
 
-const cryptos = [
-  { name: 'Bitcoin', symbol: 'BTC', price: 50000, change: 2.5, icon: '/icons/btc.png' },
-  { name: 'Ethereum', symbol: 'ETH', price: 3000, change: -1.2, icon: '/icons/eth.png' },
-  { name: 'Cardano', symbol: 'ADA', price: 1.5, change: 0.8, icon: '/icons/ada.png' },
-  { name: 'Polkadot', symbol: 'DOT', price: 30, change: -0.5, icon: '/icons/dot.png' },
-  { name: 'Solana', symbol: 'SOL', price: 150, change: 5.2, icon: '/icons/sol.png' },
-  { name: 'Ripple', symbol: 'XRP', price: 0.75, change: 1.1, icon: '/icons/xrp.png' },
-  { name: 'Dogecoin', symbol: 'DOGE', price: 0.25, change: -2.3, icon: '/icons/doge.png' },
-  { name: 'Chainlink', symbol: 'LINK', price: 20, change: 3.7, icon: '/icons/link.png' },
-  // Add more cryptocurrencies as needed
+import Image from 'next/image';
+import { AnimatedList } from '@/components/magicui/animated-list';
+import { cn } from '@/lib/utils';
+
+interface Crypto {
+  name: string;
+  symbol: string;
+  price: string; // Use string to accommodate "--" as the initial value
+  change: string; // Use string to accommodate "--%" as the initial value
+  icon: string;
+}
+
+const cryptos: Crypto[] = [
+  { name: 'Bitcoin', symbol: 'BTC', price: '--', change: '--%', icon: '/btc.png' },
+  { name: 'Ethereum', symbol: 'ETH', price: '--', change: '--%', icon: '/eth.png' },
+  { name: 'Cardano', symbol: 'ADA', price: '--', change: '--%', icon: '/ADA.png' },
+  { name: 'Polkadot', symbol: 'DOT', price: '--', change: '--%', icon: '/DOT.png' },
+  { name: 'Solana', symbol: 'SOL', price: '--', change: '--%', icon: '/SOL.png' },
+  { name: 'Ripple', symbol: 'XRP', price: '--', change: '--%', icon: '/XRP.png' },
+  { name: 'Dogecoin', symbol: 'DOGE', price: '--', change: '--%', icon: '/DOGE.png' },
+  { name: 'Avalanche', symbol: 'AVAX', price: '--', change: '--%', icon: '/AVAX.png' },
+  { name: 'Binance Coin', symbol: 'BNB', price: '--', change: '--%', icon: '/bnb.png' },
+  { name: 'Litecoin', symbol: 'LTC', price: '--', change: '--%', icon: '/LTC.png' },
+  { name: 'Shiba Inu', symbol: 'SHIB', price: '--', change: '--%', icon: '/SHIB.png' },
+  { name: 'Tron', symbol: 'TRX', price: '--', change: '--%', icon: '/TRX.png' },
 ];
 
-export default function CryptoList() {
+const CryptoCard = ({ name, symbol, price, change, icon }: Crypto) => {
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold mb-4">Top Cryptocurrencies</h2>
-      {cryptos.map((crypto) => (
-        <Card key={crypto.symbol} className="bg-gray-800 hover:bg-gray-700 transition-colors">
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="flex items-center">
-              <Image src={crypto.icon} alt={crypto.name} width={32} height={32} className="mr-3" />
-              <div>
-                <h3 className="font-semibold">{crypto.name}</h3>
-                <p className="text-sm text-gray-400">{crypto.symbol}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="font-bold">${crypto.price.toLocaleString()}</p>
-              <p className={`text-sm ${crypto.change > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {crypto.change > 0 ? '↑' : '↓'} {Math.abs(crypto.change)}%
-              </p>
-            </div>
-            <Switch />
-          </CardContent>
-        </Card>
-      ))}
+    <figure
+      className={cn(
+        "relative mx-auto min-h-fit w-full max-w-[500px] cursor-pointer overflow-hidden rounded-2xl p-4",
+        // animation styles
+        "transition-all duration-200 ease-in-out hover:scale-[103%]",
+        // light styles
+        "bg-gray-800 hover:bg-gray-700 [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
+        // dark styles
+        "dark:bg-transparent dark:backdrop-blur-md dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]"
+      )}
+    >
+      <div className="flex flex-row items-center gap-3">
+        <div className="flex items-center justify-center rounded-2xl bg-gray-900 p-2">
+          <Image src={icon} alt={name} width={32} height={32} className="rounded-full" />
+        </div>
+        <div className="flex flex-col overflow-hidden">
+          <figcaption className="flex flex-row items-center whitespace-pre text-lg font-medium text-white">
+            <span className="text-sm sm:text-lg">{name}</span>
+            <span className="mx-1">·</span>
+            <span className="text-xs text-gray-500">{symbol}/USDT</span>
+          </figcaption>
+          <p className="text-sm font-normal text-green-500">
+            {price}
+            <span className="ml-2">{change}</span>
+          </p>
+        </div>
+      </div>
+    </figure>
+  );
+};
+
+export function CryptoList() {
+  return (
+    <div
+      className={cn(
+        "relative flex h-full w-full flex-col p-6 overflow-hidden rounded-lg bg-gray-900 md:shadow-xl",
+      )}
+    >
+      <h2 className="text-3xl font-bold text-white mb-6">Top Cryptocurrencies</h2>
+      <AnimatedList>
+        {cryptos.map((crypto, idx) => (
+          <CryptoCard {...crypto} key={idx} />
+        ))}
+      </AnimatedList>
     </div>
   );
 }
