@@ -1,23 +1,25 @@
 'use client';
 import Link from "next/link";
-import { Home, TrendingUp, CreditCard, UserPlus, DollarSign } from "lucide-react";
+import { Home, TrendingUp, CreditCard, UserPlus, DollarSign,PersonStanding } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dock, DockIcon } from "@/components/magicui/dock";
 
 const Icons = {
   home: Home,
   trade: TrendingUp,
-  recharge: CreditCard,  // Updated icon for "Recharge"
+  recharge: CreditCard, 
   invite: UserPlus,
-  withdraw: DollarSign,  // Updated icon for "Withdraw"
+  withdraw: DollarSign,  
+  person: PersonStanding,  
 };
 
 const NAV_ITEMS = [
   { href: "/", icon: Icons.home, label: "Home" },
-  { href: "/#", icon: Icons.trade, label: "Trade" },
+  { href: "/quantify", icon: Icons.trade, label: "Quantify" },
   { href: "/recharge", icon: Icons.recharge, label: "Recharge" },
-  { href: "/#", icon: Icons.invite, label: "Invite" },
+  { href: "/invite", icon: Icons.invite, label: "Invite" },
   { href: "/withdraw", icon: Icons.withdraw, label: "Withdraw" },
+  { href: "/me", icon: Icons.person, label: "Me" },
 ];
 
 const BottomNavigation: React.FC = () => {

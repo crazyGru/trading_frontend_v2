@@ -6,6 +6,7 @@ import WithdrawForm from '@/components/WithdrawForm';
 import ConfirmButton from '@/components/ConfirmButton';
 import { toast } from '@/components/ui/use-toast';
 import { motion } from 'framer-motion';
+import Cookies from 'js-cookie';
 
 const Withdraw = () => {
   const [balance, setBalance] = useState(0);
@@ -14,8 +15,9 @@ const Withdraw = () => {
   const [token, setToken] = useState('');
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
+    const storedToken = Cookies.get('access_token');
     if (storedToken) {
+      console.log('Stored token:', storedToken);
       setToken(storedToken);
       fetchUserData(storedToken);
     }
@@ -23,6 +25,7 @@ const Withdraw = () => {
 
   const fetchUserData = async (token: string) => {
     try {
+      console.log('Fetching user data with token:', token);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });

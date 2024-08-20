@@ -1,78 +1,138 @@
 'use client';
 
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
-import { AnimatedList } from '@/components/magicui/animated-list';
-import { cn } from '@/lib/utils';
 
 interface Crypto {
+  id: number;
   name: string;
   symbol: string;
-  price: string; // Use string to accommodate "--" as the initial value
-  change: string; // Use string to accommodate "--%" as the initial value
+  price: string;
+  change: string;
   icon: string;
 }
 
-const cryptos: Crypto[] = [
-  { name: 'Bitcoin', symbol: 'BTC', price: '--', change: '--%', icon: '/btc.png' },
-  { name: 'Ethereum', symbol: 'ETH', price: '--', change: '--%', icon: '/eth.png' },
-  { name: 'Cardano', symbol: 'ADA', price: '--', change: '--%', icon: '/ADA.png' },
-  { name: 'Polkadot', symbol: 'DOT', price: '--', change: '--%', icon: '/DOT.png' },
-  { name: 'Solana', symbol: 'SOL', price: '--', change: '--%', icon: '/SOL.png' },
-  { name: 'Ripple', symbol: 'XRP', price: '--', change: '--%', icon: '/XRP.png' },
-  { name: 'Dogecoin', symbol: 'DOGE', price: '--', change: '--%', icon: '/DOGE.png' },
-  { name: 'Avalanche', symbol: 'AVAX', price: '--', change: '--%', icon: '/AVAX.png' },
-  { name: 'Binance Coin', symbol: 'BNB', price: '--', change: '--%', icon: '/bnb.png' },
-  { name: 'Litecoin', symbol: 'LTC', price: '--', change: '--%', icon: '/LTC.png' },
-  { name: 'Shiba Inu', symbol: 'SHIB', price: '--', change: '--%', icon: '/SHIB.png' },
-  { name: 'Tron', symbol: 'TRX', price: '--', change: '--%', icon: '/TRX.png' },
-];
+const exchanges = ['binance', 'okx', 'huobi', 'coinbase'];
+
+const cryptoIcons: { [key: string]: string } = {
+  BTC: '/btc.png',
+  ETH: '/eth.png',
+  ADA: '/ADA.png',
+  DOT: '/DOT.png',
+  SOL: '/SOL.png',
+  XRP: '/XRP.png',
+  DOGE: '/DOGE.png',
+  AVAX: '/AVAX.png',
+  BNB: '/bnb.png',
+  LTC: '/LTC.png',
+  SHIB: '/SHIB.png',
+  TRX: '/TRX.png',
+};
+
+const TradeInfoCard = ({ symbol }: { symbol: string }) => (
+  <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-md">
+    <div className="flex items-center space-x-4">
+      <div className="flex flex-col">
+        <span className="text-gray-400 text-sm">{symbol}/USDT</span>
+        <span className="text-white font-semibold">--</span>
+      </div>
+    </div>
+    <div className="flex flex-col items-end">
+      <span className="text-lg text-green-500">--%</span>
+    </div>
+  </div>
+);
 
 const CryptoCard = ({ name, symbol, price, change, icon }: Crypto) => {
   return (
-    <figure
-      className={cn(
-        "relative mx-auto min-h-fit w-full max-w-[500px] cursor-pointer overflow-hidden rounded-2xl p-4",
-        // animation styles
-        "transition-all duration-200 ease-in-out hover:scale-[103%]",
-        // light styles
-        "bg-gray-800 hover:bg-gray-700 [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
-        // dark styles
-        "dark:bg-transparent dark:backdrop-blur-md dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]"
-      )}
-    >
-      <div className="flex flex-row items-center gap-3">
-        <div className="flex items-center justify-center rounded-2xl bg-gray-900 p-2">
-          <Image src={icon} alt={name} width={32} height={32} className="rounded-full" />
-        </div>
-        <div className="flex flex-col overflow-hidden">
-          <figcaption className="flex flex-row items-center whitespace-pre text-lg font-medium text-white">
-            <span className="text-sm sm:text-lg">{name}</span>
-            <span className="mx-1">·</span>
-            <span className="text-xs text-gray-500">{symbol}/USDT</span>
-          </figcaption>
-          <p className="text-sm font-normal text-green-500">
-            {price}
-            <span className="ml-2">{change}</span>
-          </p>
+    <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-md">
+      <div className="flex items-center space-x-4">
+        <Image src={icon} alt={name} width={24} height={24} />
+        <div className="flex flex-col">
+          <span className="text-white font-semibold">{name}</span>
+          <span className="text-gray-400 text-sm">{symbol}/USDT</span>
         </div>
       </div>
-    </figure>
+        <span className={`text-lg ${price === '--' ? 'text-gray-400' : change.includes('-') ? 'text-red-500' : 'text-green-500'}`}>{price}</span>
+        <span className={`text-sm ${change === '--%' ? 'text-gray-400' : change.includes('-') ? 'text-red-500' : 'text-green-500'}`}>{change}</span>
+    </div>
   );
 };
 
+const fetchCryptoData = async (exchange: string) => {
+  const response = await fetch(`/api/crypto?exchange=${exchange}`);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
 export function CryptoList() {
+  const [selectedExchange, setSelectedExchange] = useState('binance');
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['cryptoData', selectedExchange],
+    queryFn: () => fetchCryptoData(selectedExchange),
+    refetchInterval: 10000, // Refetch every minute
+  });
+// console.log(data,'data')
+  const cryptoData = data ? data.data.slice(0, 12).map((coin: any) => ({
+    id: coin.id,
+    name: coin.name,
+    symbol: coin.symbol,
+    price: `${coin.quote.USD.price.toFixed(2)}`,
+    change: `${coin.quote.USD.percent_change_24h.toFixed(2)}%`,
+    icon: cryptoIcons[coin.symbol] || '/default-crypto.png',
+  })) : [];
+
   return (
-    <div
-      className={cn(
-        "relative flex h-full w-full flex-col p-6 overflow-hidden rounded-lg bg-gray-900 md:shadow-xl",
-      )}
-    >
-      <h2 className="text-3xl font-bold text-white mb-6">Top Cryptocurrencies</h2>
-      <AnimatedList>
-        {cryptos.map((crypto, idx) => (
-          <CryptoCard {...crypto} key={idx} />
+    <div className="p-4 bg-gray-900 rounded-lg">
+      <div className="flex justify-between mb-4">
+        {cryptoData.slice(0, 3).map((crypto:any) => (
+          <TradeInfoCard key={crypto.id} symbol={crypto.symbol} />
         ))}
-      </AnimatedList>
+      </div>
+      <div className="flex space-x-4 mb-4">
+        {exchanges.map((exchange) => (
+          <button
+            key={exchange}
+            onClick={() => setSelectedExchange(exchange)}
+            className={`px-4 py-2 rounded text-white ${
+              selectedExchange === exchange ? 'bg-blue-600' : 'bg-blue-500'
+            }`}
+          >
+            {exchange.charAt(0).toUpperCase() + exchange.slice(1)}
+          </button>
+        ))}
+      </div>
+      <div className="text-white text-sm font-semibold flex justify-between gap-4 mb-2">
+        <div>Currency</div>
+        <div className='pl-28'>Latest Price($)</div>
+        <div>24h Rise & Down</div>
+      </div>
+      <div className="space-y-4">
+        {isLoading || isError ? (
+          Object.keys(cryptoIcons).map((symbol, index) => (
+            <CryptoCard
+              key={index}
+              id={index}
+              name={symbol}
+              symbol={symbol}
+              price="--"
+              change="--%"
+              icon={cryptoIcons[symbol]}
+            />
+          ))
+        ) : (
+          cryptoData.map((crypto: Crypto) => 
+          {
+            console.log(crypto)
+           return <CryptoCard key={crypto.id} {...crypto} />
+          }
+          )
+        )}
+      </div>
     </div>
   );
 }
