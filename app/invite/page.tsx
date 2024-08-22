@@ -29,7 +29,7 @@ export default function Invite() {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invite/${username}`);
       const data = await response.json();
       setInviteCode(data.code);
-      setInviteLink(`https://agiqtbot.com/#/register?i=${data.code}`);
+      setInviteLink(`${process.env.NEXT_PUBLIC_APP_URL}/signup?code=${data.code}`);
     } catch (error) {
       toast({
         title: "Error fetching invite code",

@@ -1,39 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { useRouter } from 'next/navigation';
+import { useRouter,useSearchParams } from 'next/navigation';
 import Link from "next/link";
+import { z } from "zod";
+import { ZodError } from "zod";
+
+// Zod schema definition
+const signupSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters long"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+  confirmPassword: z.string(),
+  referralCode: z.string().optional(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const validatePasswords = () => {
-    if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
-      return false;
+  useEffect(() => {
+    const code = searchParams.get('code');
+    if (code) {
+      setReferralCode(code);
     }
-    setPasswordError("");
-    return true;
-  };
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validatePasswords()) return;
 
-    setIsLoading(true);
     try {
+      // Validate form data using Zod schema
+      const formData = { email, password, username, confirmPassword, referralCode };
+      signupSchema.parse(formData);
+
+      setIsLoading(true);
       const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/users", {
         method: "POST",
         headers: {
@@ -41,6 +58,7 @@ export default function Signup() {
         },
         body: JSON.stringify({ email, password, username }),
       });
+
       if (res.ok) {
         toast({
           title: "Account created",
@@ -52,12 +70,20 @@ export default function Signup() {
         throw new Error("Failed to create account");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: `${error}`,
-        variant: "destructive",
-      });
-      console.error(error);
+      if (error instanceof ZodError) {
+        const formattedErrors = error.errors.reduce((acc, curr) => {
+          acc[curr.path[0]] = curr.message;
+          return acc;
+        }, {} as { [key: string]: string });
+        setErrors(formattedErrors);
+      } else {
+        toast({
+          title: "Error",
+          description: `${error}`,
+          variant: "destructive",
+        });
+        console.error(error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -92,6 +118,8 @@ export default function Signup() {
                 onChange={(e) => setUsername(e.target.value)}
                 className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-gray-500 focus:ring-gray-500"
               />
+              {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+              
               <Input
                 type="email"
                 placeholder="Email"
@@ -99,6 +127,8 @@ export default function Signup() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-gray-500 focus:ring-gray-500"
               />
+              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+
               <Input
                 type="password"
                 placeholder="Password"
@@ -106,6 +136,8 @@ export default function Signup() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-gray-500 focus:ring-gray-500"
               />
+              {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+
               <Input
                 type="password"
                 placeholder="Confirm Password"
@@ -113,8 +145,15 @@ export default function Signup() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-gray-500 focus:ring-gray-500"
               />
-              {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
-              <Button
+              {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}         
+              <Input
+                type="text"
+                placeholder="Invite Code"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value)}
+                className="bg-gray-700 text-gray-100 placeholder-gray-400 border-gray-600 focus:border-gray-500 focus:ring-gray-500"
+              />                  
+             <Button
                 type="submit"
                 className="w-full bg-gray-600 hover:bg-gray-700 text-gray-100 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-800 transition duration-300 ease-in-out transform hover:scale-105"
                 disabled={isLoading}
@@ -130,7 +169,7 @@ export default function Signup() {
               </Button>
               <p className="text-gray-400 text-center">
                 Already have an account? <Link href="/login" className="text-blue-500 hover:underline">Login</Link>
-                </p>
+              </p>
             </form>
           </CardContent>
         </Card>

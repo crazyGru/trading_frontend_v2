@@ -1,43 +1,54 @@
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
+'use client'
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { motion } from "framer-motion";
+const carouselImages = [
+  "/robot1.webp",
+  "/robot2.jpg",
+  "/robot3.jpg",
+  "/robot4.jpg",
+  "/robot5.jpg",
+  "/robot6.jpg",
+];
 
-export default function TradingSection() {
+const ImageCarosel=()=>{
   return (
-    <div className="space-y-6">
-      {/* Top Cryptocurrency Cards Section */}
-      <div className="flex space-x-4">
-        {/* First Card */}
-        <Card className="w-full bg-gray-900 text-white flex items-center justify-between p-4 rounded-lg">
-          <div>
-            <h3 className="text-lg font-semibold">BTC/USDT</h3>
-            <p className="text-xl mt-2">--</p>
-            <p className="text-sm">--%</p>
-          </div>
-          <Image
-            src="/btc.png" // Replace with your image path
-            alt="Profile"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-        </Card>
-
-        {/* Second Card */}
-        <Card className="w-full bg-gray-900 text-white flex items-center justify-between p-4 rounded-lg">
-          <div>
-            <h3 className="text-lg font-semibold">ETH/USDT</h3>
-            <p className="text-xl mt-2">--</p>
-            <p className="text-sm">--%</p>
-          </div>
-          <Image
-            src="/eth.png" // Replace with your image path
-            alt="Profile"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-        </Card>
-      </div>
-    </div>
-  );
+   <div className="w-full">
+     <motion.div
+  initial={{ opacity: 0, scale: 0.95 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{
+    duration: 0.8,
+    ease: [0, 0.71, 0.2, 1.01],
+    scale: {
+      type: "spring",
+      damping: 12,
+      stiffness: 100,
+      restDelta: 0.001
+    }
+  }}
+>
+  <div className="mb-8 w-full ">
+    <Slider
+      dots={true}
+      infinite={true}
+      speed={500}
+      slidesToShow={1}
+      slidesToScroll={1}
+      autoplay={true}
+      arrows={false}
+    >
+      {carouselImages.map((image, index) => (
+        <div key={index}>
+          <img src={image} alt={`Carousel image ${index + 1}`} className="w-full h-48 object-cover rounded-lg" />
+        </div>
+      ))}
+    </Slider>
+  </div>
+</motion.div>
+   </div>
+  )
 }
+
+export default ImageCarosel

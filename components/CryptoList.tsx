@@ -74,7 +74,7 @@ export function CryptoList() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['cryptoData', selectedExchange],
     queryFn: () => fetchCryptoData(selectedExchange),
-    refetchInterval: 10000, // Refetch every minute
+    refetchInterval: 1000, // Refetch every minute
   });
 // console.log(data,'data')
   const cryptoData = data ? data.data.slice(0, 12).map((coin: any) => ({
