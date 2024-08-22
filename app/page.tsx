@@ -13,9 +13,7 @@ export default function Home() {
       <ImageCarosel />
       <QuickActions />
       {/* <InviteBanner /> */}
-      <div className="py-6">
         <CryptoList />
-      </div>
       <BottomNavigation />
     </div>
   );

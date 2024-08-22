@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import SparklesText from "@/components/magicui/sparkles-text";
+import WordRotate from "@/components/magicui/word-rotate";
  
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -28,7 +28,10 @@ export default function Header() {
 
   return (
     <header className="bg-gray-800 p-4 flex justify-between items-center">
-      <SparklesText text="CryptoTrade" className='text-xl' />
+      <WordRotate
+      className="text-xl font-bold text-slate-300 dark:text-white"
+      words={["Total", "Invest"]}
+    />
       <div>
         {isLoggedIn ? (
           <Button variant="ghost" onClick={handleLogout}>
